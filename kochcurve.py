@@ -36,6 +36,7 @@ HEIGHT=600
 
 window = tk.Tk()
 window.title("Koch Curve")
+window.resizable(width=False, height=False)
 
 canvas = tk.Canvas(window, width=WIDTH, height=HEIGHT, bg='white')
 canvas.pack(side=tk.TOP)
@@ -96,14 +97,11 @@ def get_sublines(line):
     Create 4 new lines using subdivision points of line.
     '''
     points = get_subdivisions(line.start, line.end)
-    lines = []
-    lines.append(Line(points[0], points[1], line.level + 1))
-    lines.append(Line(points[1], points[2], line.level + 1))
-    lines.append(Line(points[2], points[3], line.level + 1))
-    lines.append(Line(points[3], points[4], line.level + 1))
-    return lines
-    
-        
+    return [Line(points[0], points[1], line.level + 1),
+        Line(points[1], points[2], line.level + 1),
+        Line(points[2], points[3], line.level + 1),
+        Line(points[3], points[4], line.level + 1)]
+
 def get_position_vector(A, B):
     # A & B are position vectors or just points defining a vector
     return Vector(Point(B[0]-A[0], B[1]-A[1]))
@@ -124,15 +122,15 @@ def get_subdivisions(tail, tip):
     '''
     v = get_position_vector(tail, tip)
     B = Vector(Point(v[0]/3.0 + tail[0], v[1]/3.0 + tail[1]))
-    D = Vector(Point(v[0]*2/3 + tail[0], v[1]*2/3 + tail[1]))
+    D = Vector(Point(v[0]*2/3.0 + tail[0], v[1]*2/3.0 + tail[1]))
     C = Vector(rotate(B, D, -60))
     return [tail,B,C,D,tip]
     
 def must_draw(line):
     ''' Check if line is at final level and therefore should be drawn. '''
-    level = int(spinbox.get()) # level better global updated every time buttons clicked
-    # the problem of changing the spinbox while drawing
-    
+    level = int(spinbox.get())
+    # level better global and updated only before the first call to main algorithm
+    # because changing the spinbox while drawing causes a bug
     return line.level == level
 
 def kochCurve(line):
@@ -150,7 +148,8 @@ def kochCurve(line):
 
 def drawKoch(event):
     canvas.delete('line') # clean the canvas
-    
+    canvas.create_text(WIDTH/2, HEIGHT/2, anchor=tk.CENTER, text="Calculating...", tags="text", fill='black')
+    canvas.update()
     if event.widget == buttonCurve:
         # clicked buttonCurve
         start = Point(0,HEIGHT*2/3)
@@ -165,6 +164,7 @@ def drawKoch(event):
         kochCurve(Line(point1, point2))
         kochCurve(Line(point2, point3))
         kochCurve(Line(point3, point1))
+    canvas.delete('text')
     
 # Buttons and Spinbox
 #
