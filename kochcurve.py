@@ -20,8 +20,7 @@
 #  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 #  MA 02110-1301, USA.
 
-from sys import exit
-from math import cos, sin, radians
+import sys, math
 
 try:
     import Tkinter as tk # Python < 3
@@ -108,9 +107,9 @@ def get_position_vector(A, B):
 
 def rotate(axis, point, grades):
     new_point = Point()
-    r_grades = radians(grades)
-    new_point[0]=axis[0] + (point[0]-axis[0])*cos(r_grades) - (point[1]-axis[1])*sin(r_grades)
-    new_point[1]=axis[1] + (point[0]-axis[0])*sin(r_grades) + (point[1]-axis[1])*cos(r_grades)
+    r_grades = math.radians(grades)
+    new_point[0]=axis[0] + (point[0]-axis[0])*math.cos(r_grades) - (point[1]-axis[1])*math.sin(r_grades)
+    new_point[1]=axis[1] + (point[0]-axis[0])*math.sin(r_grades) + (point[1]-axis[1])*math.cos(r_grades)
     return new_point
     
 def get_subdivisions(tail, tip):
@@ -129,15 +128,13 @@ def get_subdivisions(tail, tip):
 def must_draw(line):
     ''' Check if line is at final level and therefore should be drawn. '''
     level = int(spinbox.get())
-    # level better global and updated only before the first call to main algorithm
-    # because changing the spinbox while drawing causes a bug
     return line.level == level
 
 def kochCurve(line):
     ''' Generate and draw a Koch curve.
     
     Call this function three times for each line of an equilateral triangle
-    and get a snowflake. This is the main backtracking algorythm. Cool!
+    and get a snowflake. This is the main backtracking algorithm. Cool!
     '''
     if must_draw(line):
         line.draw()
@@ -145,8 +142,10 @@ def kochCurve(line):
     else:
         for subline in get_sublines(line):
             kochCurve(subline)
+    spinbox.config(state=tk.NORMAL)
 
 def drawKoch(event):
+    spinbox.config(state=tk.DISABLED)
     canvas.delete('line') # clean the canvas
     canvas.create_text(WIDTH/2, HEIGHT/2, anchor=tk.CENTER, text="Calculating...", tags="text", fill='black')
     canvas.update()
