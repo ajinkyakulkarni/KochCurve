@@ -143,18 +143,22 @@ def kochCurve(line):
         for subline in get_sublines(line):
             kochCurve(subline)
     spinbox.config(state=tk.NORMAL)
+    buttonCurve.config(state=tk.NORMAL)
+    buttonSnowflake.config(state=tk.NORMAL)
 
-def drawKoch(event):
+def drawKoch(shape):
     spinbox.config(state=tk.DISABLED)
+    buttonCurve.config(state=tk.DISABLED)
+    buttonSnowflake.config(state=tk.DISABLED)
     canvas.delete('line') # clean the canvas
     canvas.create_text(WIDTH/2, HEIGHT/2, anchor=tk.CENTER, text="Calculating...", tags="text", fill='black')
     canvas.update()
-    if event.widget == buttonCurve:
+    if (shape == 'curve'):
         # clicked buttonCurve
         start = Point(0,HEIGHT*2/3)
         end = Point(WIDTH,HEIGHT*2/3)
         kochCurve(Line(start, end)) # backtracking
-    elif event.widget == buttonSnowflake:
+    elif (shape == 'snowflake'):
         # clicked buttonSnowflake
         # call three times kochCurve for each line of an equilateral triangle
         point1 = Point(100,175)
@@ -168,13 +172,11 @@ def drawKoch(event):
 # Buttons and Spinbox
 #
 # button for create a koch curve
-buttonCurve = tk.Button(window, text="Koch Curve")
-buttonCurve.bind('<Button-1>', drawKoch)
+buttonCurve = tk.Button(window, text="Koch Curve", command=(lambda: drawKoch('curve')))
 buttonCurve.pack(side=tk.LEFT, fill=tk.X, expand=1)
 
 # button for create a koch snowflake
-buttonSnowflake = tk.Button(window, text="Koch Snowflake")
-buttonSnowflake.bind('<Button-1>', drawKoch)
+buttonSnowflake = tk.Button(window, text="Koch Snowflake", command=(lambda: drawKoch('snowflake')))
 buttonSnowflake.pack(side=tk.LEFT, fill=tk.X, expand=1)
 
 # label for spinbox level selection
